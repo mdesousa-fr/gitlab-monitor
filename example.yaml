@@ -1,0 +1,10 @@
+token: "fake_token"
+policies:
+    - groups:
+        - "123456"
+        - "567890"
+      merge_method: ff
+    - groups:
+        - "102938"
+        - "485760"
+      merge_method: merge
