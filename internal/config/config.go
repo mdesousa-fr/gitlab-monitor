@@ -8,9 +8,15 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const GitlabTokenEnvkey = "GITLAB_TOKEN"
+
 type Config struct {
-	Token    string   `yaml:"token"`
-	Policies []Policy `yaml:"policies"`
+	App      AppConfig `yaml:"app"`
+	Policies []Policy  `yaml:"policies"`
+}
+
+type AppConfig struct {
+	Token string `yaml:"token"`
 }
 
 type Policy struct {
@@ -32,15 +38,15 @@ func ReadConfig(filename string) (Config, error) {
 		log.Fatal(err)
 	}
 
-	// If the token is not set on the config file, try to get the token from GITLAB_TOKEN environment
-	if config.Token == "" {
-		token := os.Getenv("GITLAB_TOKEN")
-		config.Token = token
+	// If GitLab token is set by GITLAB_TOKEN environment, override the token provided by the configuration file
+	token := os.Getenv(GitlabTokenEnvkey)
+	if token != "" {
+		config.App.Token = token
 	}
 
-	// If the is not set by the config file or the environment, raise an error
-	if config.Token == "" {
-		return config, errors.New("token not provided")
+	// If the GitLab token is not set by the config file or the environment, return an empty config and an error
+	if config.App.Token == "" {
+		return Config{}, errors.New("token not provided")
 	}
 
 	return config, nil

@@ -1,4 +1,5 @@
-token: "fake_token"
+app:
+  token: "fake_token"
 policies:
     - groups:
         - "123456"
