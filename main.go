@@ -8,9 +8,9 @@ import (
 )
 
 func main() {
-	config, err := config.ReadConfig("example.yaml")
+	cfg, err := config.ReadConfig("example.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(config)
+	fmt.Println(cfg)
 }
