@@ -1,8 +1,11 @@
 package gitlab
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"time"
 )
@@ -65,4 +68,46 @@ func (c Client) Auth() error {
 	}
 
 	return nil
+}
+
+func (c Client) GetGroup(groupIdentifier string) (Group, error) {
+	resource := fmt.Sprintf("groups/%s", groupIdentifier)
+	u := fmt.Sprintf("%s/%s", c.baseUrl, resource)
+
+	// Prepare the request
+	req, err := http.NewRequest(http.MethodGet, u, nil)
+	if err != nil {
+		return Group{}, err
+	}
+
+	// Add authorization header
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
+
+	client := http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		return Group{}, err
+	}
+
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(res.Body)
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return Group{}, err
+	}
+
+	var group Group
+	err = json.Unmarshal(body, &group)
+	if err != nil {
+		return Group{}, err
+	}
+
+	return group, nil
 }

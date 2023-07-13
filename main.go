@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/mdesousa-fr/gitlab-monitor/internal/config"
@@ -17,5 +18,16 @@ func main() {
 	err = gitlabClient.Auth()
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	for _, p := range cfg.Policies {
+		for _, g := range p.Groups {
+			grp, err := gitlabClient.GetGroup(g)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(grp)
+			fmt.Println(len(grp.Projects))
+		}
 	}
 }
