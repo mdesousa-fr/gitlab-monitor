@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/mdesousa-fr/gitlab-monitor/internal/config"
@@ -20,14 +19,21 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for _, p := range cfg.Policies {
-		for _, g := range p.Groups {
+	for _, policy := range cfg.Policies {
+		for _, g := range policy.Groups {
 			grp, err := gitlabClient.GetGroup(g)
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Println(grp)
-			fmt.Println(len(grp.Projects))
+			//fmt.Println(grp)
+			//fmt.Println(len(grp.Projects))
+			for _, p := range grp.Projects {
+				if p.MergeMethod != policy.MergeMethod {
+					log.Printf("%s merge method is not compliant", p.Url)
+				} else {
+					log.Printf("%s merge method is compliant", p.Url)
+				}
+			}
 		}
 	}
 }
