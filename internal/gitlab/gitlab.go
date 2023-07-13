@@ -12,6 +12,22 @@ type Client struct {
 	token   string
 }
 
+type Group struct {
+	Id       int       `json:"id"`
+	Name     string    `json:"name"`
+	Url      string    `json:"web_url"`
+	Projects []Project `json:"projects"`
+}
+
+type Project struct {
+	Id            int    `json:"id"`
+	Name          string `json:"name"`
+	Url           string `json:"web_url"`
+	MergeMethod   string `json:"merge_method"`
+	DefaultBranch string `json:"default_branch"`
+	Visibility    string `json:"visibility"`
+}
+
 func NewClient(baseUrl string, token string) Client {
 	return Client{baseUrl, token}
 }
